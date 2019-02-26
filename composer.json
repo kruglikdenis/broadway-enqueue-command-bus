@@ -1,0 +1,48 @@
+{
+  "name": "kruglikdenis/broadway-enqueue",
+  "description": "Enqueue integration for Broadway library",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Kruglik Denis",
+      "email": "kruglikdenis1995@gmail.com",
+      "homepage": "https://github.com/kruglikdenis",
+      "role": "Maintainer"
+    }
+  ],
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "BroadwayEnqueue\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BroadwayEnqueue\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.2",
+    "broadway/broadway": "^2.1",
+    "enqueue/enqueue": "^0.9.7",
+    "enqueue/null": "^0.9.2",
+    "queue-interop/queue-interop": "^0.8.0",
+    "queue-interop/amqp-interop": "^0.8.1"
+  },
+  "require-dev": {
+    "vimeo/psalm": "^3.0",
+    "phpunit/phpunit": "^8.0"
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "scripts": {
+    "psalm": "./vendor/bin/psalm --config=psalm.xml",
+    "phpunit": "./vendor/bin/phpunit --configuration phpunit.xml --verbose",
+    "test": [
+      "@phpunit"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
