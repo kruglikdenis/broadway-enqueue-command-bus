@@ -6,7 +6,6 @@ namespace BroadwayEnqueue\CommandHandling;
 
 use Broadway\CommandHandling\CommandHandler;
 use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
-use BroadwayEnqueue\Logger\HandleCommandError;
 use Interop\Queue\Context;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -99,7 +98,7 @@ final class CommandBus implements AsyncCommandBus
 
             $this->logger->error(
                 'An exception occurred during the producing of a command',
-                HandleCommandError::create($throwable, $command)->toArray()
+                HandleCommandErrorContext::fromExceptionAndCommand($throwable, $command)
             );
         } finally {
             $this->isDispatching = false;
@@ -121,7 +120,7 @@ final class CommandBus implements AsyncCommandBus
 
             $this->logger->error(
                 'An exception occurred during the producing of a command',
-                HandleCommandError::create($throwable, $command)->toArray()
+                HandleCommandErrorContext::fromExceptionAndCommand($throwable, $command)
             );
         } finally {
             $this->isDispatching = false;
