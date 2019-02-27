@@ -23,11 +23,12 @@
   },
   "require": {
     "php": ">=7.2",
+    "ext-json": "*",
     "broadway/broadway": "^2.1",
     "enqueue/enqueue": "^0.9.7",
     "enqueue/null": "^0.9.2",
     "queue-interop/queue-interop": "^0.8.0",
-    "queue-interop/amqp-interop": "^0.8.1"
+    "psr/log": "^1.1"
   },
   "require-dev": {
     "vimeo/psalm": "^3.0",

@@ -10,7 +10,9 @@ use BroadwayEnqueue\CommandHandling\Command;
 use BroadwayEnqueue\CommandHandling\CommandBus;
 use Enqueue\Null\NullContext;
 use Interop\Queue\Context;
+use Interop\Queue\Exception\InvalidMessageException;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 final class CommandBusTest extends TestCase
 {
@@ -87,5 +89,80 @@ final class CommandBusTest extends TestCase
 
         $commandBus->subscribe($commandHandler);
         $commandBus->asyncDispatch($command);
+    }
+
+    public function testShouldLogErrorWhenDispatch(): void
+    {
+        $command = $this->createMock(Command::class);
+
+        $commandHandler = $this->createMock(CommandHandler::class);
+        $commandHandler
+            ->expects($this->once())
+            ->method('handle')
+            ->with($command)
+            ->will($this->throwException(new \Exception('I failed.')));
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error');
+
+        $this->commandBus->setLogger($logger);
+
+        $this->commandBus->subscribe($commandHandler);
+        $this->commandBus->dispatch($command);
+    }
+
+    public function testShouldLogErrorWhenProduce(): void
+    {
+        $context = $this->createMock(Context::class);
+        $context->method('createMessage')
+            ->will($this->throwException(new InvalidMessageException()));
+
+        $commandBus = new CommandBus($context, 'test');
+
+        $command = $this->createMock(Command::class);
+
+        $commandHandler = $this->createMock(CommandHandler::class);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error');
+
+        $commandBus->setLogger($logger);
+
+        $commandBus->subscribe($commandHandler);
+        $commandBus->asyncDispatch($command);
+    }
+
+    public function testStillHandleCommandsAfterException(): void
+    {
+        $firstCommmand = $this->createMock(Command::class);
+        $secondCommand = $this->createMock(Command::class);
+
+        $commandHandler = $this->createMock(CommandHandler::class);
+        $simpleHandler = $this->createMock(CommandHandler::class);
+
+        $commandHandler
+            ->expects($this->at(0))
+            ->method('handle')
+            ->with($firstCommmand)
+            ->will($this->throwException(new \Exception('I failed.')));
+
+        $commandHandler
+            ->expects($this->at(1))
+            ->method('handle')
+            ->with($secondCommand);
+
+        $simpleHandler
+            ->expects($this->once())
+            ->method('handle')
+            ->with($secondCommand);
+
+        $this->commandBus->subscribe($commandHandler);
+        $this->commandBus->subscribe($simpleHandler);
+
+        $this->commandBus->dispatch($firstCommmand);
+        $this->commandBus->dispatch($secondCommand);
+        $this->commandBus->asyncDispatch($secondCommand);
     }
 }

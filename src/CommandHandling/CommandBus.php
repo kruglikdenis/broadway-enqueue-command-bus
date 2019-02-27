@@ -6,10 +6,15 @@ namespace BroadwayEnqueue\CommandHandling;
 
 use Broadway\CommandHandling\CommandHandler;
 use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
+use BroadwayEnqueue\Logger\HandleCommandError;
 use Interop\Queue\Context;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 
 final class CommandBus implements AsyncCommandBus
 {
+    use LoggerAwareTrait;
+
     /**
      * @var Context
      */
@@ -43,6 +48,8 @@ final class CommandBus implements AsyncCommandBus
         $this->commandHandlers = [];
         $this->queue = [];
         $this->isDispatching = false;
+
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -87,6 +94,13 @@ final class CommandBus implements AsyncCommandBus
             while ($command = array_shift($this->queue)) {
                 $this->handleCommand($command);
             }
+        } catch (\Throwable $throwable) {
+            $command = isset($command) ? $command : null;
+
+            $this->logger->error(
+                'An exception occurred during the producing of a command',
+                HandleCommandError::create($throwable, $command)->toArray()
+            );
         } finally {
             $this->isDispatching = false;
         }
@@ -102,8 +116,13 @@ final class CommandBus implements AsyncCommandBus
             while ($command = array_shift($this->queue)) {
                 $this->produceCommand($command);
             }
-        } catch (\Interop\Queue\Exception $exception) {
+        } catch (\Throwable $throwable) {
+            $command = isset($command) ? $command : null;
 
+            $this->logger->error(
+                'An exception occurred during the producing of a command',
+                HandleCommandError::create($throwable, $command)->toArray()
+            );
         } finally {
             $this->isDispatching = false;
         }
