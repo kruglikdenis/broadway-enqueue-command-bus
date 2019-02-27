@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace BroadwayEnqueue\Tests\CommandHandling;
+namespace BroadwayEnqueue\CommandBus\Tests\CommandHandling;
 
 use Broadway\CommandHandling\CommandHandler;
 use Broadway\CommandHandling\Exception\CommandNotAnObjectException;
-use BroadwayEnqueue\CommandHandling\Command;
-use BroadwayEnqueue\CommandHandling\CommandBus;
+use BroadwayEnqueue\CommandBus\CommandHandling\Command;
+use BroadwayEnqueue\CommandBus\CommandHandling\CommandBus;
 use Enqueue\Null\NullContext;
 use Interop\Queue\Context;
 use Interop\Queue\Exception\InvalidMessageException;

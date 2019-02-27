@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BroadwayEnqueue\CommandHandling;
+namespace BroadwayEnqueue\CommandBus\CommandHandling;
 
 final class HandleCommandErrorContext
 {

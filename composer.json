@@ -13,12 +13,12 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "BroadwayEnqueue\\": "src/"
+      "BroadwayEnqueue\\CommandBus\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "BroadwayEnqueue\\Tests\\": "tests/"
+      "BroadwayEnqueue\\CommandBus\\Tests\\": "tests/"
     }
   },
   "require": {
